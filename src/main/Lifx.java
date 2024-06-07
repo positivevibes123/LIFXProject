@@ -13,6 +13,11 @@ public class Lifx extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        /*
+        Every button press calls functions which send HTTP requests on a separate thread (SwingWorker)
+        This is done because trying this on a single thread will lock up the GUI.
+         */
+
         // If the button to toggle power has been pressed, try to toggle power in a separate thread
         if (e.getSource() == powerButton) {
             SwingWorker<Void, Void> worker = new SwingWorker<>() {
@@ -83,6 +88,11 @@ public class Lifx extends JFrame implements ActionListener {
 
     public static void main(String[] args) {
         String path = "./token.txt";
+
+        /*
+        Look for an LIFX token in a .txt file (token.txt) in the same directory as the program.
+        This is done because without this token we cannot interface with our lightbulb/s.
+         */
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
