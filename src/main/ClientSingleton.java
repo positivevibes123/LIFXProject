@@ -38,30 +38,24 @@ public class ClientSingleton {
                 .encodeToString(credentials.getBytes());
     }
 
-    public void togglePower() throws IOException, InterruptedException {
-        String requestBody = "{\"duration\": \"1\"}";
-
+    private void sendHttpRequest(String body, String header) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.lifx.com/v1/lights/all/toggle"))
+                .uri(URI.create(header))
                 .header("Authorization", getCredentials())
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         System.out.printf("Status %s \n", response.statusCode());
     }
 
+    public void togglePower() throws IOException, InterruptedException {
+        sendHttpRequest("{\"duration\": \"1\"}", "https://api.lifx.com/v1/lights/all/toggle");
+    }
+
     public void setColor(Color color) throws IOException, InterruptedException {
-        String requestBody = "{\"color\": \"rgb:" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "\"}";
-        System.out.println(requestBody);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.lifx.com/v1/lights/all/state"))
-                .header("Authorization", getCredentials())
-                .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.printf("Status %s \n", response.statusCode());
+        String body = "{\"color\": \"rgb:" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "\"}";
+        String header = "https://api.lifx.com/v1/lights/all/state";
+        sendHttpRequest(body, header);
     }
 }
